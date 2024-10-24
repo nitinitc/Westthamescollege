@@ -1,0 +1,82 @@
+-- Step 1: Create Database
+CREATE DATABASE school_management;
+USE school_management;
+
+-- Step 1.1: Create 'students' Table
+CREATE TABLE students (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_name VARCHAR(100),
+    age INT,
+    grade_level INT
+);
+
+-- Step 1.2: Create 'courses' Table
+CREATE TABLE courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_name VARCHAR(100),
+    instructor VARCHAR(100)
+);
+
+-- Step 1.3: Create 'enrollments' Table
+CREATE TABLE enrollments (
+    enrollment_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);
+
+-- Step 2: Insert Data into 'students' Table
+INSERT INTO students (student_name, age, grade_level)
+VALUES 
+    ('John Doe', 15, 10),
+    ('Jane Smith', 14, 9),
+    ('Mark Johnson', 16, 11),
+    ('Emily Brown', 17, 12);
+
+-- Step 2.1: Insert Data into 'courses' Table
+INSERT INTO courses (course_name, instructor)
+VALUES 
+    ('Math 101', 'Dr. Alan Smith'),
+    ('History 201', 'Ms. Susan Lee'),
+    ('Science 301', 'Mr. Richard Harris');
+
+-- Step 2.2: Insert Data into 'enrollments' Table
+INSERT INTO enrollments (student_id, course_id)
+VALUES 
+    (1, 1), -- John Doe is enrolled in Math 101
+    (1, 2), -- John Doe is also enrolled in History 201
+    (2, 1), -- Jane Smith is enrolled in Math 101
+    (3, 3), -- Mark Johnson is enrolled in Science 301
+    (4, 2); -- Emily Brown is enrolled in History 201
+
+-- Step 3: Queries
+-- 3.1: View All Students
+SELECT * FROM students;
+
+-- 3.2: List All Students and Their Enrolled Courses
+SELECT students.student_name, courses.course_name
+FROM enrollments
+JOIN students ON enrollments.student_id = students.student_id
+JOIN courses ON enrollments.course_id = courses.course_id;
+
+-- 3.3: Find Students Enrolled in 'Math 101'
+SELECT students.student_name
+FROM enrollments
+JOIN students ON enrollments.student_id = students.student_id
+JOIN courses ON enrollments.course_id = courses.course_id
+WHERE courses.course_name = 'Math 101';
+
+-- 3.4: Count Students in Each Course
+SELECT courses.course_name, COUNT(enrollments.student_id) AS student_count
+FROM enrollments
+JOIN courses ON enrollments.course_id = courses.course_id
+GROUP BY courses.course_name;
+
+-- 3.5: Update 'Jane Smith' Grade Level to 11
+UPDATE students
+SET grade_level = 11
+WHERE student_name = 'Jane Smith';
+
+-- 3.6: Delete 'Mark Johnson' from 'students' Table
+DELETE FROM students WHERE student_name = 'Mark Johnson';
